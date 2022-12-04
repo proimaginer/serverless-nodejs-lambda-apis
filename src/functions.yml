@@ -1,0 +1,14 @@
+# Posts APIs
+PostsProxy:
+  handler: src/posts/proxy.handler
+  package:
+    patterns:
+      - 'src/posts/**'
+  layers:
+    - ${env:AWS_LAMBDA_LAYER}
+  events:
+    - schedule: ${self:custom.schedule}
+    - http:
+        path: posts/{proxy+}
+        method: any
+        cors: ${self:custom.cors}

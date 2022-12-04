@@ -1,0 +1,85 @@
+service: lambda-apis
+
+# https://www.serverless.com/framework/docs/deprecations/#NEW_VARIABLES_RESOLVER
+useDotenv: true
+variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-latest-layer-version
+  - serverless-offline
+
+custom:
+  schedule:
+    rate: rate(5 minutes)
+    enabled: true
+    description: Health Checker
+    input:
+      healthCheck: true
+  cors:
+    origin: '*'
+    headers:
+      - Content-Type
+      - Authorization
+      - X-Api-Key
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage}
+  region: ap-northeast-2
+  memorySize: 1024 # optional, in MB, default is 1024
+  timeout: 10 # optional, in seconds, default is 10
+  versionFunctions: false # optional, default is true
+  vpc:
+    securityGroupIds:
+      - ${env:SECURITY_GROUP_IDS}
+    subnetIds:
+      - ${env:SUBNET_IDS_A}
+      - ${env:SUBNET_IDS_B}
+  deploymentBucket:
+    name: serverless-nodejs-deploy-source
+    serverSideEncryption: AES256
+  deploymentPrefix: serverless
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: "AWS::ApiGateway::GatewayResponse"
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+    GatewayResponseDefault5XX:
+      Type: "AWS::ApiGateway::GatewayResponse"
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+
+functions: ${file(./src/functions.yml)}
+
+package:
+  individually: true
+  patterns:
+    - '!.git/**'
+    - '!.gitignore'
+    - '!.DS_Store'
+    - '!npm-debug.log'
+    - '!.serverless/**'
+    - '!.serverless_plugins/**'
+    - '!.eslintrc'
+    - '!.idea/**'
+    - '!bitbucket-pipelines.yml'
+    - '!package.json'
+    - '!package-lock.json'
+    - '!README.md'
+    - '!node_modules/**'
+    - '!test/**'
+    - '!src/**'

@@ -1,0 +1,29 @@
+{
+  "name": "lambda-apis",
+  "version": "1.0.0",
+  "description": "apis",
+  "dependencies": {
+    "aws-sdk": "^2.1237.0",
+    "fs": "^0.0.1-security",
+    "pg": "^8.8.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.28.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.0",
+    "serverless": "^3.25.0",
+    "serverless-dotenv-plugin": "^4.0.2",
+    "serverless-latest-layer-version": "^2.1.2",
+    "serverless-offline": "^11.5.0"
+  },
+  "scripts": {
+    "update": "npm cache clean --force && rm -rf ./node_modules && rm -rf ./package-lock.json && npm install --save",
+    "offline": "sls offline --stage dev",
+    "deploy:dev": "sls deploy --stage dev",
+    "deploy:stg": "sls deploy --stage stg",
+    "deploy:prd": "sls deploy --stage prd"
+  }
+}
