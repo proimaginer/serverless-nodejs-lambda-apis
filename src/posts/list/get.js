@@ -6,20 +6,22 @@ module.exports = async (request) => {
     offset = 0,
   } = request.queryStringParameters;
 
-  const { rows: countRows } = await db.query(`
-    SELECT count(id)
-    FROM posts
-  `);
+  const { rows: countRows } = await db.query(
+    `
+      SELECT count(id)
+      FROM posts
+    `,
+  );
   const [{ count }] = countRows;
 
   const { rows: posts } = await db.query(
     `
-    SELECT *
-    FROM posts
-    ORDER BY $1
-    LIMIT $2
-    OFFSET $3
-  `,
+      SELECT *
+      FROM posts
+      ORDER BY $1
+      LIMIT $2
+      OFFSET $3
+    `,
     [order, limit, offset],
   );
 
